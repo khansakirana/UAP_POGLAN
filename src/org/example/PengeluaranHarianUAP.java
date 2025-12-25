@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class PengeluaranHarianUAP extends JFrame {
 
-    // ===== STYLE (TIDAK DIUBAH) =====
+    
     Font titleFont = new Font("Segoe UI", Font.BOLD, 26);
     Font font = new Font("Segoe UI", Font.PLAIN, 14);
 
@@ -20,7 +20,7 @@ public class PengeluaranHarianUAP extends JFrame {
     Color white     = new Color(245, 245, 245);
     Color gray      = new Color(180, 180, 180);
 
-    // ===== GLOBAL =====
+    
     CardLayout cardLayout = new CardLayout();
     JPanel mainPanel = new JPanel(cardLayout);
 
@@ -34,7 +34,6 @@ public class PengeluaranHarianUAP extends JFrame {
     ArrayList<Pengeluaran> dataList = new ArrayList<>();
     final String FILE_NAME = "pengeluaran.csv";
 
-    // ===== CONSTRUCTOR =====
     public PengeluaranHarianUAP() {
         setTitle("Pengeluaran Harian");
         setSize(900, 550);
@@ -54,7 +53,7 @@ public class PengeluaranHarianUAP extends JFrame {
         cardLayout.show(mainPanel, "LOGIN");
     }
 
-    // ================= LOGIN (FIX TIDAK MERENG) =================
+ 
     private JPanel loginPanel() {
         JPanel root = new JPanel(new GridBagLayout());
         root.setBackground(bgBlack);
@@ -113,7 +112,7 @@ public class PengeluaranHarianUAP extends JFrame {
         return root;
     }
 
-    // ================= DASHBOARD =================
+
     private JPanel dashboard() {
         JPanel root = new JPanel(new GridBagLayout());
         root.setBackground(bgBlack);
@@ -150,7 +149,7 @@ public class PengeluaranHarianUAP extends JFrame {
         return root;
     }
 
-    // ================= FORM =================
+
     private JPanel formInput() {
         JPanel panel = new JPanel(new BorderLayout(20, 20));
         panel.setBackground(bgBlack);
@@ -192,7 +191,7 @@ public class PengeluaranHarianUAP extends JFrame {
         return panel;
     }
 
-    // ================= LIST =================
+   
     private JPanel listData() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBackground(bgBlack);
