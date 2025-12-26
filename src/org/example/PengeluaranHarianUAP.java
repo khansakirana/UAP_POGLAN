@@ -210,4 +210,219 @@ public class PengeluaranHarianUAP extends JFrame {
                 txtJumlah.setText(model.getValueAt(selectedIndex, 2).toString());
             }
         });
+        txtSearch = field("");
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                searchData();
+            }
+        });
+
+        JButton update = actionButton("Update");
+        JButton delete = actionButton("Delete");
+        JButton back = actionButton("Kembali");
+
+        update.addActionListener(e -> updateData());
+        delete.addActionListener(e -> deleteData());
+        back.addActionListener(e -> cardLayout.show(mainPanel, "DASHBOARD"));
+
+        JPanel btn = new JPanel();
+        btn.setBackground(bgBlack);
+        btn.add(update);
+        btn.add(delete);
+        btn.add(back);
+
+        panel.add(txtSearch, BorderLayout.NORTH);
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        panel.add(btn, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    // ================= LAPORAN =================
+    private JPanel laporan() {
+        JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
+        panel.setBackground(bgBlack);
+        panel.setBorder(new EmptyBorder(40, 40, 40, 40));
+
+        JLabel title = new JLabel("Laporan Pengeluaran");
+        title.setFont(titleFont);
+        title.setForeground(softPink);
+
+        lblTotal = new JLabel();
+        lblTotal.setFont(titleFont);
+        lblTotal.setForeground(white);
+
+        lblJumlahData = new JLabel();
+        lblJumlahData.setForeground(gray);
+
+        JButton back = actionButton("Kembali");
+        back.addActionListener(e -> cardLayout.show(mainPanel, "DASHBOARD"));
+
+        panel.add(title);
+        panel.add(lblTotal);
+        panel.add(lblJumlahData);
+        panel.add(back);
+        return panel;
+    }
+
+   
+    private void simpanData() {
+        try {
+            int jumlah = Integer.parseInt(txtJumlah.getText());
+            dataList.add(new Pengeluaran(
+                    LocalDate.parse(txtTanggal.getText()),
+                    txtKeterangan.getText(),
+                    jumlah
+            ));
+            saveData();
+            refreshTable();
+            JOptionPane.showMessageDialog(this,
+                    "Data berhasil disimpan");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Jumlah harus berupa angka");
+        }
+    }
+
+    private void updateData() {
+        if (selectedIndex < 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Pilih data yang ingin diupdate");
+            return;
+        }
+        try {
+            int jumlah = Integer.parseInt(txtJumlah.getText());
+            Pengeluaran p = dataList.get(selectedIndex);
+            p.tanggal = LocalDate.parse(txtTanggal.getText());
+            p.keterangan = txtKeterangan.getText();
+            p.jumlah = jumlah;
+
+            saveData();
+            refreshTable();
+            JOptionPane.showMessageDialog(this,
+                    "Data berhasil diupdate");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Jumlah harus berupa angka");
+        }
+    }
+
+    private void deleteData() {
+        if (selectedIndex < 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Pilih data yang ingin dihapus");
+            return;
+        }
+        dataList.remove(selectedIndex);
+        saveData();
+        refreshTable();
+        JOptionPane.showMessageDialog(this,
+                "Data berhasil dihapus");
+    }
+
+    private void searchData() {
+        model.setRowCount(0);
+        for (Pengeluaran p : dataList)
+            if (p.keterangan.toLowerCase()
+                    .contains(txtSearch.getText().toLowerCase()))
+                model.addRow(new Object[]{
+                        p.tanggal, p.keterangan, p.jumlah});
+    }
+
+    private void refreshTable() {
+        model.setRowCount(0);
+        for (Pengeluaran p : dataList)
+            model.addRow(new Object[]{
+                    p.tanggal, p.keterangan, p.jumlah});
+    }
+
+    private void saveData() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
+            for (Pengeluaran p : dataList)
+                pw.println(p.tanggal + "," + p.keterangan + "," + p.jumlah);
+        } catch (IOException ignored) {}
+    }
+
+    private void loadData() {
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String l;
+            while ((l = br.readLine()) != null) {
+                String[] d = l.split(",");
+                dataList.add(new Pengeluaran(
+                        LocalDate.parse(d[0]),
+                        d[1],
+                        Integer.parseInt(d[2])
+                ));
+            }
+        } catch (IOException ignored) {}
+    }
+
+
+    private JButton menuButton(String text, String target) {
+        JButton b = actionButton(text);
+        b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        b.addActionListener(e -> {
+            if (target.equals("LIST")) {
+                refreshTable();
+            }
+            if (target.equals("LAPORAN")) {
+                refreshLaporan(); // 🔥 INI YANG BIKIN LAPORAN MUNCUL
+            }
+            cardLayout.show(mainPanel, target);
+        });
+        return b;
+    }
+
+    private void refreshLaporan() {
+        int total = 0;
+        for (Pengeluaran p : dataList) {
+            total += p.jumlah;
+        }
+
+        lblTotal.setText("Total Pengeluaran: Rp " + total);
+        lblJumlahData.setText("Jumlah Data: " + dataList.size());
+    }
+
+
+    private JButton actionButton(String t) {
+        JButton b = new JButton(t);
+        b.setBackground(softPink);
+        b.setForeground(Color.BLACK);
+        b.setFont(font);
+        b.setBorder(new EmptyBorder(10, 20, 10, 20));
+        return b;
+    }
+
+    private JTextField field(String v) {
+        JTextField f = new JTextField(v);
+        f.setFont(font);
+        f.setBorder(new LineBorder(softPink));
+        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        return f;
+    }
+
+    private JLabel label(String t) {
+        JLabel l = new JLabel(t);
+        l.setForeground(white);
+        l.setFont(font);
+        return l;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() ->
+                new PengeluaranHarianUAP().setVisible(true));
+    }
+}
+
+
+class Pengeluaran {
+    LocalDate tanggal;
+    String keterangan;
+    int jumlah;
+
+    Pengeluaran(LocalDate t, String k, int j) {
+        tanggal = t;
+        keterangan = k;
+        jumlah = j;
+    }
+}
         
