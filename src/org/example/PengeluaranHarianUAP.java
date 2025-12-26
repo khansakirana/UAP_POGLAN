@@ -237,7 +237,7 @@ public class PengeluaranHarianUAP extends JFrame {
         return panel;
     }
 
-    // ================= LAPORAN =================
+    
     private JPanel laporan() {
         JPanel panel = new JPanel(new GridLayout(4, 1, 10, 10));
         panel.setBackground(bgBlack);
@@ -365,7 +365,7 @@ public class PengeluaranHarianUAP extends JFrame {
                 refreshTable();
             }
             if (target.equals("LAPORAN")) {
-                refreshLaporan(); // 🔥 INI YANG BIKIN LAPORAN MUNCUL
+                refreshLaporan(); 
             }
             cardLayout.show(mainPanel, target);
         });
